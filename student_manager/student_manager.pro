@@ -33,7 +33,7 @@ SOURCES += \
 HEADERS += \
         mainwindow.h \
     add.h \
-    attgrades.h
+    attgrades.h \
 
 FORMS += \
         mainwindow.ui \

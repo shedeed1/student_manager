@@ -15,6 +15,9 @@ public:
     explicit AttGrades(QWidget *parent = 0);
     ~AttGrades();
 
+private slots:
+    void on_pushButton_clicked();
+
 private:
     Ui::AttGrades *ui;
 };

@@ -19,7 +19,7 @@ Add::Add(QWidget *parent) :
     ui->comboBox->addItem("الأربعاء");
     ui->comboBox->addItem("الخميس");
 
-    ui->comboBox_2->addItem("8:30");
+    ui->comboBox_2->addItem("08:30");
     ui->comboBox_2->addItem("10:00");
     ui->comboBox_2->addItem("01:00");
     ui->comboBox_2->addItem("03:00");
