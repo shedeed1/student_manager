@@ -6,6 +6,7 @@
 
 QT       += core gui
 QT       += sql
+QT       += network
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -28,14 +29,17 @@ SOURCES += \
         main.cpp \
         mainwindow.cpp \
     add.cpp \
-    attgrades.cpp
+    attgrades.cpp \
+    remove.cpp
 
 HEADERS += \
         mainwindow.h \
     add.h \
     attgrades.h \
+    remove.h
 
 FORMS += \
         mainwindow.ui \
     add.ui \
-    attgrades.ui
+    attgrades.ui \
+    remove.ui

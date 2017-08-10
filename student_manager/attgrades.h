@@ -18,6 +18,10 @@ public:
 private slots:
     void on_pushButton_clicked();
 
+    void on_comboBox_5_currentIndexChanged(int index);
+
+    void on_pushButton_2_clicked();
+
 private:
     Ui::AttGrades *ui;
 };

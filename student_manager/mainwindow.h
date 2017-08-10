@@ -25,6 +25,8 @@ private slots:
     void updateTbl();
     void on_pushButton_4_clicked();
     void on_pushButton_5_clicked();
+    void upload();
+
 private:
     Ui::MainWindow *ui;
 };

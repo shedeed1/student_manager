@@ -1,7 +1,10 @@
+// Developed by Mohamed Shedeed
+
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 #include "add.h"
 #include "attgrades.h"
+#include "remove.h"
 #include <QtSql>
 #include <QSqlDatabase>
 #include <QSqlDriver>
@@ -11,11 +14,20 @@
 #include <QTableView>
 #include <QSqlTableModel>
 #include <QDialog>
+#include <QFile>
+#include <QHttpPart>
+#include <QHttpMultiPart>
+#include <QNetworkAccessManager>
+#include <QNetworkReply>
+
+QSqlDatabase db;
+bool first;
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
 {
+    first = true;
     ui->setupUi(this);
     ui->comboBox->addItem("");
     ui->comboBox->addItem("الجمعة");
@@ -24,7 +36,6 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->comboBox->addItem("الأثنين");
     ui->comboBox->addItem("الثلاثاء");
     ui->comboBox->addItem("الأربعاء");
-    ui->comboBox->addItem("الخميس");
 
     ui->comboBox_2->addItem("");
     ui->comboBox_2->addItem("08:30");
@@ -34,16 +45,10 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->comboBox_2->addItem("05:00");
     ui->comboBox_2->addItem("07:00");
     ui->comboBox_2->addItem("09:00");
-    DatabaseConnect();
-    QFileInfo check_file("./talaba.db");
-    if (check_file.exists()) {
 
-        } else {
-            DatabaseInit(); }
+    DatabaseConnect(); // Connecting to database and organizing table
 
-    DatabaseInit();
-
-    // PROBLEM HERE
+    DatabaseInit(); // Initializing database
 }
 
 
@@ -62,25 +67,28 @@ void MainWindow::on_pushButton_clicked() // Add
 
 void MainWindow::on_pushButton_2_clicked() // Remove
 {
-
+    Remove remove;
+    connect(&remove,SIGNAL(updatee()),this,SLOT(updateTbl()));
+    remove.setModal(true);
+    remove.exec();
 }
 
 void MainWindow::on_pushButton_3_clicked() // Search
 {
        QString s;
        s = ui->lineEdit->text();
-       QSqlDatabase db;
        QSqlTableModel *model = new QSqlTableModel(ui->tableView,db);
        model->setTable("talaba");
-       //model->setEditStrategy(QSqlTableModel::OnManualSubmit);
+       model->setEditStrategy(QSqlTableModel::OnFieldChange);
        model->select();
+       model->setHeaderData(0, Qt::Horizontal, tr("الرقم التعريفي"));
        model->setHeaderData(1, Qt::Horizontal, tr("الإسم"));
        model->setHeaderData(2, Qt::Horizontal, tr("مجموع الاعدادية"));
-       model->setHeaderData(0, Qt::Horizontal, tr("الرقم التعريفي"));
-       model->setHeaderData(3, Qt::Horizontal, tr("اليوم"));
-       model->setHeaderData(4, Qt::Horizontal, tr("الساعة"));
-
-      model->submitAll();
+       model->setHeaderData(3, Qt::Horizontal, tr("رقم الهاتف"));
+       model->setHeaderData(4, Qt::Horizontal, tr("رقم ولي الأمر"));
+       model->setHeaderData(5, Qt::Horizontal, tr("المدرسة"));
+       model->setHeaderData(6, Qt::Horizontal, tr("اليوم"));
+       model->setHeaderData(7, Qt::Horizontal, tr("الساعة"));
 
       if (ui->comboBox->currentText()=="" && ui->comboBox_2->currentText()=="") {
       if (ui->lineEdit_2->text() == "" && ui->lineEdit->text() != "")
@@ -135,8 +143,6 @@ void MainWindow::DatabaseConnect()
 {
     const QString DRIVER("QSQLITE");
 
-    QSqlDatabase db;
-
     if(QSqlDatabase::isDriverAvailable(DRIVER))
     {
         db = QSqlDatabase::addDatabase(DRIVER);
@@ -149,17 +155,19 @@ void MainWindow::DatabaseConnect()
     else
         qWarning() << "MainWindow::DatabaseConnect - ERROR: no driver " << DRIVER << " available";
 
+
     QSqlTableModel *model = new QSqlTableModel(ui->tableView,db);
     model->setTable("talaba");
-    //model->setEditStrategy(QSqlTableModel::OnManualSubmit);
+    model->setEditStrategy(QSqlTableModel::OnFieldChange);
     model->select();
+    model->setHeaderData(0, Qt::Horizontal, tr("الرقم التعريفي"));
     model->setHeaderData(1, Qt::Horizontal, tr("الإسم"));
     model->setHeaderData(2, Qt::Horizontal, tr("مجموع الاعدادية"));
-    model->setHeaderData(0, Qt::Horizontal, tr("الرقم التعريفي"));
-    model->setHeaderData(3, Qt::Horizontal, tr("اليوم"));
-    model->setHeaderData(4, Qt::Horizontal, tr("الساعة"));
-
-    model->submitAll();
+    model->setHeaderData(3, Qt::Horizontal, tr("رقم الهاتف"));
+    model->setHeaderData(4, Qt::Horizontal, tr("رقم ولي الأمر"));
+    model->setHeaderData(5, Qt::Horizontal, tr("المدرسة"));
+    model->setHeaderData(6, Qt::Horizontal, tr("اليوم"));
+    model->setHeaderData(7, Qt::Horizontal, tr("الساعة"));
 
     ui->tableView->setModel(model);
 
@@ -173,10 +181,15 @@ void MainWindow::DatabaseConnect()
     font.setPointSize(12);
     ui->tableView->setFont(font);
 
-    ui->tableView->horizontalHeader()->moveSection(0,4);
-    ui->tableView->horizontalHeader()->moveSection(0,3);
-    ui->tableView->horizontalHeader()->moveSection(0,2);
-    for (int i=5;i<21;i++)
+    ui->tableView->horizontalHeader()->swapSections(0,53);
+    ui->tableView->horizontalHeader()->swapSections(1,52);
+    ui->tableView->horizontalHeader()->swapSections(2,51);
+    ui->tableView->horizontalHeader()->swapSections(3,50);
+    ui->tableView->horizontalHeader()->swapSections(4,49);
+    ui->tableView->horizontalHeader()->swapSections(5,48);
+    ui->tableView->horizontalHeader()->swapSections(6,47);
+    ui->tableView->horizontalHeader()->swapSections(7,46);
+    for (int i=8;i<54;i++)
     ui->tableView->hideColumn(i);
 
     ui->tableView->resizeColumnsToContents();
@@ -188,20 +201,39 @@ void MainWindow::DatabaseConnect()
 
 void MainWindow::updateTbl()
 {
-    QSqlDatabase db;
+    for (int i=0;i<54;i++)
+      ui->tableView->showColumn(i);
     QSqlTableModel *model = new QSqlTableModel(ui->tableView,db);
     model->setTable("talaba");
-    //model->setEditStrategy(QSqlTableModel::OnManualSubmit);
+    model->setEditStrategy(QSqlTableModel::OnFieldChange);
     model->select();
+    model->setHeaderData(0, Qt::Horizontal, tr("الرقم التعريفي"));
     model->setHeaderData(1, Qt::Horizontal, tr("الإسم"));
     model->setHeaderData(2, Qt::Horizontal, tr("مجموع الاعدادية"));
-    model->setHeaderData(0, Qt::Horizontal, tr("الرقم التعريفي"));
-    model->setHeaderData(3, Qt::Horizontal, tr("اليوم"));
-     model->setHeaderData(4, Qt::Horizontal, tr("الساعة"));
-
-   model->submitAll();
+    model->setHeaderData(3, Qt::Horizontal, tr("رقم الهاتف"));
+    model->setHeaderData(4, Qt::Horizontal, tr("رقم ولي الأمر"));
+    model->setHeaderData(5, Qt::Horizontal, tr("المدرسة"));
+    model->setHeaderData(6, Qt::Horizontal, tr("اليوم"));
+    model->setHeaderData(7, Qt::Horizontal, tr("الساعة"));
 
    ui->tableView->setModel(model);
+
+   QFont font = ui->tableView->horizontalHeader()->font();
+   font.setPointSize(12);
+   ui->tableView->setFont(font);
+
+   if (first)
+   {
+       ui->tableView->horizontalHeader()->swapSections(0,53);
+       ui->tableView->horizontalHeader()->swapSections(1,52);
+       ui->tableView->horizontalHeader()->swapSections(2,51);
+       ui->tableView->horizontalHeader()->swapSections(3,50);
+       ui->tableView->horizontalHeader()->swapSections(4,49);
+       ui->tableView->horizontalHeader()->swapSections(5,48);
+       ui->tableView->horizontalHeader()->swapSections(6,47);
+       ui->tableView->horizontalHeader()->swapSections(7,46);
+       first = false;
+   }
 
    for (int c = 0; c < ui->tableView->horizontalHeader()->count(); ++c)
    {
@@ -209,33 +241,23 @@ void MainWindow::updateTbl()
            c, QHeaderView::Stretch);
    }
 
-   QFont font = ui->tableView->horizontalHeader()->font();
-   font.setPointSize(12);
-   ui->tableView->setFont(font);
+   for (int i=8;i<54;i++)
+   ui->tableView->hideColumn(i);
 
-   ui->tableView->resizeColumnsToContents();
-   ui->tableView->setColumnWidth(2,20);
-   //ui->tableView->resizeRowsToContents();
+
    ui->tableView->verticalHeader()->setVisible(false);
    ui->tableView->show();
 }
 
 void MainWindow::DatabaseInit()
 {
-    QSqlQuery query("CREATE TABLE talaba (id TEXT, name TEXT, grade TEXT, day TEXT, time TEXT, exam1 TEXT, exam2 TEXT, exam3 TEXT, exam4 TEXT, exam5 TEXT, exam6 TEXT, day1 BOOLEAN, day2 BOOLEAN, day3 BOOLEAN, day4 BOOLEAN, day5 BOOLEAN, day6 BOOLEAN, day7 BOOLEAN, day8 BOOLEAN, day9 BOOLEAN, day10 BOOLEAN)");
+    if (db.tables().contains(QLatin1String("talaba"))) {first = false;}
+    else { first = true;
+    QSqlQuery query("CREATE TABLE talaba (id TEXT, name TEXT, grade TEXT, number TEXT, parent TEXT, school TEXT, day TEXT, time TEXT, exam1 TEXT, exam2 TEXT, exam3 TEXT, exam4 TEXT, exam5 TEXT, exam6 TEXT, day1 TEXT, day2 TEXT, day3 TEXT, day4 TEXT, day5 TEXT, day6 TEXT, day7 TEXT, day8 TEXT, day9 TEXT, day10 TEXT, day11 TEXT, day12 TEXT, day13 TEXT, day14 TEXT, day15 TEXT, day16 TEXT, day17 TEXT, day18 TEXT, day19 TEXT, day20 TEXT, day21 TEXT, day22 TEXT, day23 TEXT, day24 TEXT, day25 TEXT, day26 TEXT, day27 TEXT, day28 TEXT, day29 TEXT, day30 TEXT, day31 TEXT, day32 TEXT, day33 TEXT, day34 TEXT, day35 TEXT, day36 TEXT, day37 TEXT, day38 TEXT, day39 TEXT, day40 TEXT)");
 
     if(!query.isActive())
-        qWarning() << "MainWindow::DatabaseInit - ERROR: " << query.lastError().text();
+        qWarning() << "MainWindow::DatabaseInit - ERROR: " << query.lastError().text(); }
 }
-
-
-/*void MainWindow::DatabasePopulate()
-{
-    QSqlQuery query;
-
-    if(!query.exec("INSERT INTO talaba(name) VALUES('مصطفى محمود')"))
-        qWarning() << "MainWindow::DatabasePopulate - ERROR: " << query.lastError().text();
-}*/
 
 
 void MainWindow::on_pushButton_4_clicked() // Reset
@@ -250,7 +272,8 @@ void MainWindow::on_pushButton_4_clicked() // Reset
 void MainWindow::on_pushButton_5_clicked() // Attendance and grades
 {
     AttGrades attgrdz;
-    //connect(&add,SIGNAL(updatee()),this,SLOT(updateTbl()));
     attgrdz.setModal(true);
     attgrdz.exec();
 }
+
+
