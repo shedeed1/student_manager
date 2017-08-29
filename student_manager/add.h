@@ -19,6 +19,16 @@ public:
 private slots:
     void on_pushButton_clicked();
 
+    void on_comboBox_currentIndexChanged(int index);
+
+    void on_checkBox_toggled(bool checked);
+
+    void on_checkBox_2_toggled(bool checked);
+
+    void on_checkBox_3_toggled(bool checked);
+
+    void on_checkBox_4_toggled(bool checked);
+
 signals:
     void updatee();
 

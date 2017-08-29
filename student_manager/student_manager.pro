@@ -30,16 +30,19 @@ SOURCES += \
         mainwindow.cpp \
     add.cpp \
     attgrades.cpp \
-    remove.cpp
+    remove.cpp \
+    studentinfo.cpp
 
 HEADERS += \
         mainwindow.h \
     add.h \
     attgrades.h \
-    remove.h
+    remove.h \
+    studentinfo.h
 
 FORMS += \
         mainwindow.ui \
     add.ui \
     attgrades.ui \
-    remove.ui
+    remove.ui \
+    studentinfo.ui

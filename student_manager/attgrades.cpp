@@ -57,22 +57,16 @@ AttGrades::AttGrades(QWidget *parent) :
     ui->comboBox_5->addItem("الأربعاء");
 
     ui->comboBox_2->addItem("");
-    ui->comboBox_2->addItem("08:30");
-    ui->comboBox_2->addItem("10:00");
+    ui->comboBox_2->addItem("09:00");
+    ui->comboBox_2->addItem("11:00");
     ui->comboBox_2->addItem("01:00");
     ui->comboBox_2->addItem("03:00");
+    ui->comboBox_2->addItem("04:00");
     ui->comboBox_2->addItem("05:00");
+    ui->comboBox_2->addItem("06:00");
     ui->comboBox_2->addItem("07:00");
     ui->comboBox_2->addItem("09:00");
 
-    ui->comboBox_7->addItem("");
-    ui->comboBox_7->addItem("08:30");
-    ui->comboBox_7->addItem("10:00");
-    ui->comboBox_7->addItem("01:00");
-    ui->comboBox_7->addItem("03:00");
-    ui->comboBox_7->addItem("05:00");
-    ui->comboBox_7->addItem("07:00");
-    ui->comboBox_7->addItem("09:00");
 
     QLocale locale = QLocale(QLocale::Arabic, QLocale::Egypt);
     QDate date;
@@ -120,7 +114,7 @@ AttGrades::~AttGrades()
 
 void AttGrades::on_pushButton_clicked()
 {
-    for (int i=0;i<54;i++)
+    for (int i=0;i<56;i++)
       ui->tableView->showColumn(i);
     QSqlDatabase db;
     QString s = ui->name1->text();
@@ -198,7 +192,7 @@ void AttGrades::on_pushButton_clicked()
    for (int i=2;i<8;i++)
    ui->tableView->hideColumn(i);
 
-   for (int i=14;i<54;i++)
+   for (int i=14;i<56;i++)
    ui->tableView->hideColumn(i);
 
    ui->tableView->show();
@@ -233,33 +227,79 @@ void AttGrades::on_comboBox_5_currentIndexChanged(int index)
     {
     case 0:
         ui->comboBox_6->clear();
+        ui->comboBox_7->clear();
         break;
     case 1:
+        ui->comboBox_7->clear();
+        ui->comboBox_7->addItem("");
+        ui->comboBox_7->addItem("09:00");
+        ui->comboBox_7->addItem("04:00");
+        ui->comboBox_7->addItem("06:00");
         ui->comboBox_6->clear();
         for (int i = 0;i<40;i++)
         ui->comboBox_6->addItem(Sfriday[i]);
         break;
     case 2:
+        ui->comboBox_7->clear();
+        ui->comboBox_7->addItem("");
+        ui->comboBox_7->addItem("09:00");
+        ui->comboBox_7->addItem("11:00");
+        ui->comboBox_7->addItem("01:00");
+        ui->comboBox_7->addItem("03:00");
+        ui->comboBox_7->addItem("05:00");
+        ui->comboBox_7->addItem("07:00");
         ui->comboBox_6->clear();
         for (int i = 0;i<40;i++)
         ui->comboBox_6->addItem(Ssaturday[i]);
         break;
     case 3:
+        ui->comboBox_7->clear();
+        ui->comboBox_7->addItem("");
+        ui->comboBox_7->addItem("09:00");
+        ui->comboBox_7->addItem("11:00");
+        ui->comboBox_7->addItem("01:00");
+        ui->comboBox_7->addItem("03:00");
+        ui->comboBox_7->addItem("05:00");
+        ui->comboBox_7->addItem("07:00");
         ui->comboBox_6->clear();
         for (int i = 0;i<40;i++)
         ui->comboBox_6->addItem(Ssunday[i]);
         break;
     case 4:
+        ui->comboBox_7->clear();
+        ui->comboBox_7->addItem("");
+        ui->comboBox_7->addItem("09:00");
+        ui->comboBox_7->addItem("11:00");
+        ui->comboBox_7->addItem("01:00");
+        ui->comboBox_7->addItem("03:00");
+        ui->comboBox_7->addItem("05:00");
+        ui->comboBox_7->addItem("07:00");
         ui->comboBox_6->clear();
         for (int i = 0;i<40;i++)
         ui->comboBox_6->addItem(Smonday[i]);
         break;
     case 5:
+        ui->comboBox_7->clear();
+        ui->comboBox_7->addItem("");
+        ui->comboBox_7->addItem("09:00");
+        ui->comboBox_7->addItem("11:00");
+        ui->comboBox_7->addItem("01:00");
+        ui->comboBox_7->addItem("03:00");
+        ui->comboBox_7->addItem("05:00");
+        ui->comboBox_7->addItem("07:00");
         ui->comboBox_6->clear();
         for (int i = 0;i<40;i++)
         ui->comboBox_6->addItem(Stuesday[i]);
         break;
     case 6:
+        ui->comboBox_7->clear();
+        ui->comboBox_7->addItem("");
+        ui->comboBox_7->addItem("09:00");
+        ui->comboBox_7->addItem("11:00");
+        ui->comboBox_7->addItem("01:00");
+        ui->comboBox_7->addItem("03:00");
+        ui->comboBox_7->addItem("05:00");
+        ui->comboBox_7->addItem("07:00");
         ui->comboBox_6->clear();
         for (int i = 0;i<40;i++)
         ui->comboBox_6->addItem(Swednesday[i]);
@@ -279,7 +319,7 @@ void AttGrades::on_pushButton_2_clicked() // Show attendance
 
     if (data!= -1 || s != "") {
 
-     for (int i=0;i<54;i++)
+     for (int i=0;i<56;i++)
        ui->tableView->showColumn(i);
 
     ui->label_2->clear();
@@ -335,7 +375,7 @@ void AttGrades::on_pushButton_2_clicked() // Show attendance
    swapped = true;
    count2 = 1;
 
-   for (int i=2;i<54;i++)
+   for (int i=2;i<56;i++)
    if (i!=(14+ui->comboBox_6->currentIndex()))
        ui->tableView->hideColumn(i);
    for (int c = 0; c < ui->tableView->horizontalHeader()->count(); ++c)
@@ -343,7 +383,7 @@ void AttGrades::on_pushButton_2_clicked() // Show attendance
        ui->tableView->horizontalHeader()->setSectionResizeMode(
            c, QHeaderView::Stretch);
    }
-   ui->tableView->verticalHeader()->setVisible(false);
+   //ui->tableView->verticalHeader()->setVisible(false);
    //ui->tableView->show();
    }
 

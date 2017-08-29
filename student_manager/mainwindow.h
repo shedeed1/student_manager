@@ -13,7 +13,6 @@ class MainWindow : public QMainWindow
 
 public:
     explicit MainWindow(QWidget *parent = 0);
-
     ~MainWindow();
 
 private slots:
@@ -26,6 +25,13 @@ private slots:
     void on_pushButton_4_clicked();
     void on_pushButton_5_clicked();
     void upload();
+    void on_comboBox_currentIndexChanged(int index);
+    void uploadProgress(qint64, qint64 );
+    void uploadDone();
+
+    void on_pushButton_6_clicked();
+
+    void on_pushButton_7_clicked();
 
 private:
     Ui::MainWindow *ui;
