@@ -2,6 +2,8 @@
 #define STUDENTINFO_H
 
 #include <QDialog>
+#include <QStack>
+#include <QDate>
 
 namespace Ui {
 class StudentInfo;
@@ -13,7 +15,7 @@ class StudentInfo : public QDialog
 
 public:
     explicit StudentInfo(QWidget *parent = 0);
-    void setData(const QString &labelText,const QString &labelText2);
+    void setData(const QString &labelText,const QString &labelText2,QStack<int> &,QStack<int>&,QStack<QString>&,QDate[],QString);
     ~StudentInfo();
 
 private:

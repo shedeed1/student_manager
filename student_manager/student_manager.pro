@@ -7,6 +7,7 @@
 QT       += core gui
 QT       += sql
 QT       += network
+QT       += printsupport
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -29,20 +30,14 @@ SOURCES += \
         main.cpp \
         mainwindow.cpp \
     add.cpp \
-    attgrades.cpp \
-    remove.cpp \
     studentinfo.cpp
 
 HEADERS += \
         mainwindow.h \
     add.h \
-    attgrades.h \
-    remove.h \
     studentinfo.h
 
 FORMS += \
         mainwindow.ui \
     add.ui \
-    attgrades.ui \
-    remove.ui \
     studentinfo.ui
