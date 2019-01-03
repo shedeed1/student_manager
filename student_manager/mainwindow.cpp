@@ -106,7 +106,7 @@ void MainWindow::initializeAttendance()
 
     ui->groupComboBox1->addItem("");
     ui->groupComboBox1->addItem("مجموعة 1");
-    ui->groupComboBox1->addItem("مجموعة 2 ");
+    ui->groupComboBox1->addItem("مجموعة 2");
     ui->groupComboBox1->addItem("مجموعة 3");
     ui->groupComboBox1->addItem("مجموعة 4");
 
@@ -935,5 +935,22 @@ void MainWindow::on_compensationBtn_clicked()
 
         if(!q.exec())
             qWarning() << "Add - ERROR: " << q.lastError().text();
+    }
+}
+
+void MainWindow::on_recordAttendanceToAll_clicked()
+{
+    if (ui->dayComboBox2->currentText()!="" && ui->dateComboBox->currentText()!="" && ui->groupComboBox2->currentText()!="")
+    {
+        QSqlQuery q;
+        q.prepare("UPDATE student SET day" + QString::number(ui->dateComboBox->currentIndex()+1) + "= ? WHERE day = ? AND time = ?");
+        q.addBindValue("حاضر");
+        q.addBindValue(ui->dayComboBox2->currentText());
+        q.addBindValue(ui->groupComboBox2->currentText());
+
+        if(!q.exec())
+            qWarning() << "Add - ERROR: " << q.lastError().text();
+        else
+            on_viewAttendance_clicked();
     }
 }

@@ -48,6 +48,8 @@ private slots:
 
     void on_compensationBtn_clicked();
 
+    void on_recordAttendanceToAll_clicked();
+
 private:
     Ui::MainWindow *ui;
 };

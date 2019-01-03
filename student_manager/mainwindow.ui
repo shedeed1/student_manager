@@ -30,7 +30,7 @@
      <enum>QTabWidget::Rounded</enum>
     </property>
     <property name="currentIndex">
-     <number>0</number>
+     <number>1</number>
     </property>
     <property name="documentMode">
      <bool>false</bool>
@@ -482,6 +482,19 @@
         <width>61</width>
         <height>31</height>
        </rect>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="recordAttendanceToAll">
+      <property name="geometry">
+       <rect>
+        <x>100</x>
+        <y>70</y>
+        <width>101</width>
+        <height>31</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>تسحيل حضور الكل</string>
       </property>
      </widget>
     </widget>
