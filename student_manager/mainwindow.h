@@ -50,6 +50,8 @@ private slots:
 
     void on_recordAttendanceToAll_clicked();
 
+    void on_showGroupReport_clicked();
+
 private:
     Ui::MainWindow *ui;
 };

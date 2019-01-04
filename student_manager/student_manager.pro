@@ -30,14 +30,17 @@ SOURCES += \
         main.cpp \
         mainwindow.cpp \
     add.cpp \
-    studentinfo.cpp
+    studentinfo.cpp \
+    groupinfo.cpp
 
 HEADERS += \
         mainwindow.h \
     add.h \
-    studentinfo.h
+    studentinfo.h \
+    groupinfo.h
 
 FORMS += \
         mainwindow.ui \
     add.ui \
-    studentinfo.ui
+    studentinfo.ui \
+    groupinfo.ui

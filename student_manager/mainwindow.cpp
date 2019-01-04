@@ -4,6 +4,7 @@
 #include "ui_mainwindow.h"
 #include "add.h"
 #include "StudentInfo.h"
+#include "groupinfo.h"
 #include <QtSql>
 #include <QSqlDatabase>
 #include <QSqlDriver>
@@ -38,6 +39,7 @@ int dayCount;
 int swappedCount;
 bool swapped;
 bool swapped2;
+bool editingAttendance;
 QDate friday[40];
 QDate saturday[40];
 QDate sunday[40];
@@ -66,6 +68,7 @@ MainWindow::MainWindow(QWidget *parent) :
      ui->tabWidget->setTabText(0,"تسجيل");
      ui->tabWidget->setTabText(1,"حضور");
 
+     editingAttendance = false;
 
     int id = QFontDatabase::addApplicationFont("./fonts/UniversNextArabic-Regular_2.ttf");
     family = QFontDatabase::applicationFontFamilies(id).at(0);
@@ -158,7 +161,6 @@ MainWindow::~MainWindow()
 
 void MainWindow::fillComboBoxes()
 {
-
     ui->comboBox->addItem("");
     ui->comboBox->addItem("السبت");
     ui->comboBox->addItem("الأحد");
@@ -166,8 +168,6 @@ void MainWindow::fillComboBoxes()
     ui->comboBox->addItem("الثلاثاء");
     ui->comboBox->addItem("الأربعاء");
     ui->comboBox->addItem("الارشيف");
-
-
 
     ui->comboBox_2->addItem("");
     ui->comboBox_2->addItem("مجموعة 1");
@@ -596,6 +596,7 @@ void MainWindow::on_pushButton_9_clicked()
 
 void MainWindow::on_viewAttendance_clicked()
 {
+    editingAttendance = true;
     QString s = ui->dayComboBox2->currentText();
     QString s1 = QString::number(ui->dateComboBox->currentIndex());
     QString s2 = ui->groupComboBox2->currentText();
@@ -776,6 +777,7 @@ void MainWindow::on_dayComboBox2_currentIndexChanged(int index)
 
 void MainWindow::on_viewGradesBtn_clicked()
 {
+    editingAttendance = false;
     for (int i=0;i<57;i++)
       ui->tableView_2->showColumn(i);
     QSqlDatabase db;
@@ -848,7 +850,7 @@ void MainWindow::on_viewGradesBtn_clicked()
    ui->tableView_2->setFont(font);
 
    ui->tableView_2->resizeColumnsToContents();
-   ui->tableView_2->resizeRowsToContents();
+   //ui->tableView_2->resizeRowsToContents();
    ui->tableView_2->verticalHeader()->setVisible(false);
 
    for (int i=2;i<11;i++)
@@ -856,7 +858,8 @@ void MainWindow::on_viewGradesBtn_clicked()
 
    for (int i=17;i<57;i++)
    ui->tableView_2->hideColumn(i);
-   ui->tableView_2->setEditTriggers(QAbstractItemView::DoubleClicked);
+   ui->tableView_2->setEditTriggers(QAbstractItemView::AnyKeyPressed);
+   //ui->tableView_2->setEditTriggers(QAbstractItemView::DoubleClicked);
 
    ui->tableView_2->show();
 
@@ -886,7 +889,8 @@ void MainWindow::on_viewGradesBtn_clicked()
 
 void MainWindow::onTableClicked(const QModelIndex &index)
 {
-    qDebug() << "DETECTED DOUBLE CLICK";
+    if (editingAttendance)
+    {
     if (index.isValid()) {
         QString cellText = index.data().toString();
         if (cellText == "" || cellText=="غائب")
@@ -918,6 +922,7 @@ void MainWindow::onTableClicked(const QModelIndex &index)
             }
         }
     }
+    }
 
 }
 
@@ -925,16 +930,22 @@ void MainWindow::on_compensationBtn_clicked()
 {
     QString idCompensation = ui->idCompensation->text();
 
-    if (ui->dateComboBox->currentText()!="")
+    if (ui->dateComboBox->currentText()!="" && ui->groupComboBox2->currentText()!="")
     {
+        ui->result_label->clear();
+        QTime time;
         QSqlQuery q;
         //qDebug() << "UPDATE student SET day" + QString::number(ui->dateComboBox->currentIndex()) + "= ? WHERE id = ?";
         q.prepare("UPDATE student SET day" + QString::number(ui->dateComboBox->currentIndex()+1) + "= ? WHERE id = ?");
-        q.addBindValue("حاضر - " + ui->dateComboBox->currentText());
+        q.addBindValue("تعويض - " + ui->dateComboBox->currentText() + "- " + ui->groupComboBox2->currentText() + "- " + time.currentTime().toString() );
         q.addBindValue(idCompensation);
 
         if(!q.exec())
             qWarning() << "Add - ERROR: " << q.lastError().text();
+    }
+    else
+    {
+        ui->result_label->setText("الرجاء ادخال جميع الخانات");
     }
 }
 
@@ -942,6 +953,7 @@ void MainWindow::on_recordAttendanceToAll_clicked()
 {
     if (ui->dayComboBox2->currentText()!="" && ui->dateComboBox->currentText()!="" && ui->groupComboBox2->currentText()!="")
     {
+        ui->result_label->clear();
         QSqlQuery q;
         q.prepare("UPDATE student SET day" + QString::number(ui->dateComboBox->currentIndex()+1) + "= ? WHERE day = ? AND time = ?");
         q.addBindValue("حاضر");
@@ -952,5 +964,41 @@ void MainWindow::on_recordAttendanceToAll_clicked()
             qWarning() << "Add - ERROR: " << q.lastError().text();
         else
             on_viewAttendance_clicked();
+    }
+    else
+    {
+        ui->result_label->setText("الرجاء ادخال جميع الخانات");
+    }
+}
+
+void MainWindow::on_showGroupReport_clicked()
+{
+    if (ui->dayComboBox2->currentText()!="" && ui->dateComboBox->currentText()!="" && ui->groupComboBox2->currentText()!="")
+    {
+        ui->result_label->clear();
+        QSqlQuery attendance;
+        attendance.prepare("SELECT COUNT(id) FROM student WHERE day = ? AND time = ? AND day" + QString::number(ui->dateComboBox->currentIndex()+1) + "= ?");
+        attendance.addBindValue(ui->dayComboBox2->currentText());
+        attendance.addBindValue(ui->groupComboBox2->currentText());
+        attendance.addBindValue("حاضر");
+        attendance.exec();
+        attendance.first();
+
+        QSqlQuery missed;
+        missed.prepare("SELECT COUNT(id) FROM student WHERE day = ? AND time = ? AND day" + QString::number(ui->dateComboBox->currentIndex()+1) + "= ?");
+        missed.addBindValue(ui->dayComboBox2->currentText());
+        missed.addBindValue(ui->groupComboBox2->currentText());
+        missed.addBindValue("غائب");
+        missed.exec();
+        missed.first();
+
+        groupinfo grpinfo;
+        grpinfo.setModal(true);
+        grpinfo.setData(ui->groupComboBox2->currentText(),ui->dayComboBox2->currentText(),ui->dateComboBox->currentText(),attendance.value(0).toString(),missed.value(0).toString(),"");
+        grpinfo.exec();
+    }
+    else
+    {
+        ui->result_label->setText("الرجاء ادخال جميع الخانات");
     }
 }
