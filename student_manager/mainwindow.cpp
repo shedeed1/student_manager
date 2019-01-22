@@ -19,7 +19,7 @@
 #include <QHttpMultiPart>
 #include <QNetworkAccessManager>
 #include <QNetworkReply>
-#include <QStack>
+#include <QQueue>
 #include <QPrinter>
 #include <QTextDocument>
 #include <QPrintDialog>
@@ -31,9 +31,9 @@
 QSqlDatabase db;
 bool first;
 QNetworkReply *reply;
-QStack<int> stackMissed;
-QStack<int> stackAttended;
-QStack<QString> stackCompensation;
+QQueue<int> stackMissed;
+QQueue<int> stackAttended;
+QQueue<QString> stackCompensation;
 
 int dayCount;
 int swappedCount;
@@ -167,6 +167,7 @@ void MainWindow::fillComboBoxes()
     ui->comboBox->addItem("الأثنين");
     ui->comboBox->addItem("الثلاثاء");
     ui->comboBox->addItem("الأربعاء");
+    ui->comboBox->addItem("مؤقت");
     ui->comboBox->addItem("الارشيف");
 
     ui->comboBox_2->addItem("");
@@ -345,7 +346,7 @@ void MainWindow::DatabaseConnect()
        ui->tableView->hideColumn(i);
 
     ui->tableView->resizeColumnsToContents();
-    ui->tableView->verticalHeader()->setVisible(false);
+    //ui->tableView->verticalHeader()->setVisible(false);
 
     ui->tableView->installEventFilter(this);
     ui->tableView->show();
@@ -396,7 +397,7 @@ void MainWindow::updateTbl()
    for (int i=11;i<57;i++)
       ui->tableView->hideColumn(i);
 
-   ui->tableView->verticalHeader()->setVisible(false);
+   //ui->tableView->verticalHeader()->setVisible(false);
    ui->tableView->show();
    ui->tableView->scrollToBottom();
 }
@@ -494,10 +495,16 @@ void MainWindow::on_pushButton_6_clicked()
 
 void MainWindow::on_pushButton_7_clicked()
 {
+    QTableView *tableView = ui->tableView;
+    handleReport(tableView);
+}
+
+void MainWindow::handleReport(QTableView *tableView)
+{
     int count = 0;
-    QItemSelectionModel *select = ui->tableView->selectionModel();
+    QItemSelectionModel *select = tableView->selectionModel();
     if ( select->currentIndex().column() == 0 ) {
-    QString selection = ui->tableView->model()->data(select->currentIndex()).toString();
+    QString selection = tableView->model()->data(select->currentIndex()).toString();
 
     QSqlQuery attendance;
     attendance.prepare("SELECT * FROM student where id = ?");
@@ -510,15 +517,15 @@ void MainWindow::on_pushButton_7_clicked()
 
     for (int i =17;i<57;i++)
     {
-        if (attendance.value(i).toString() == "غائب") { stackMissed.push(i);
+        if (attendance.value(i).toString() == "غائب") { stackMissed.enqueue(i);
             count++; }
         else if (QString::compare(attendance.value(i).toString(), "حاضر", Qt::CaseInsensitive) == 0)
         {
-            stackAttended.push(i);
+            stackAttended.enqueue(i);
         }
         else if (attendance.value(i).toString().contains("-"))
         {
-            stackCompensation.push(attendance.value(i).toString());
+            stackCompensation.enqueue(attendance.value(i).toString());
         }
     }
 
@@ -671,7 +678,7 @@ void MainWindow::on_viewAttendance_clicked()
        ui->tableView_2->horizontalHeader()->setSectionResizeMode(
            c, QHeaderView::Stretch);
    }
-   ui->tableView_2->verticalHeader()->setVisible(false);
+   //ui->tableView_2->verticalHeader()->setVisible(false);
    ui->tableView_2->setEditTriggers(QAbstractItemView::NoEditTriggers);
    ui->tableView_2->show();
    }
@@ -695,79 +702,33 @@ void MainWindow::on_dayComboBox2_currentIndexChanged(int index)
     {
     case 0:
         ui->dateComboBox->clear();
-        //ui->groupComboBox2->clear();
         break;
     case 1:
-       // ui->groupComboBox2->clear();
-        //ui->groupComboBox2->addItem("");
-       // ui->groupComboBox2->addItem("09:00");
-        //ui->groupComboBox2->addItem("04:00");
-        //ui->groupComboBox2->addItem("06:00");
         ui->dateComboBox->clear();
         for (int i = 0;i<40;i++)
         ui->dateComboBox->addItem(QString::number(i+1) + "- " + Sfriday[i]);
         break;
     case 2:
-        //ui->groupComboBox2->clear();
-        //ui->groupComboBox2->addItem("");
-        //ui->groupComboBox2->addItem("09:00");
-        //ui->groupComboBox2->addItem("11:00");
-        //ui->groupComboBox2->addItem("01:00");
-        //ui->groupComboBox2->addItem("03:00");
-        //ui->groupComboBox2->addItem("05:00");
-        //ui->groupComboBox2->addItem("07:00");
         ui->dateComboBox->clear();
         for (int i = 0;i<40;i++)
         ui->dateComboBox->addItem(QString::number(i+1) + "- " + Ssaturday[i]);
         break;
     case 3:
-        //ui->groupComboBox2->clear();
-        //ui->groupComboBox2->addItem("");
-        //ui->groupComboBox2->addItem("09:00");
-        //ui->groupComboBox2->addItem("11:00");
-        //ui->groupComboBox2->addItem("01:00");
-        //ui->groupComboBox2->addItem("03:00");
-        //ui->groupComboBox2->addItem("05:00");
-        //ui->groupComboBox2->addItem("07:00");
         ui->dateComboBox->clear();
         for (int i = 0;i<40;i++)
         ui->dateComboBox->addItem(QString::number(i+1) + "- " + Ssunday[i]);
         break;
     case 4:
-        //ui->groupComboBox2->clear();
-        //ui->groupComboBox2->addItem("");
-        //ui->groupComboBox2->addItem("09:00");
-        //ui->groupComboBox2->addItem("11:00");
-        //ui->groupComboBox2->addItem("01:00");
-        //ui->groupComboBox2->addItem("03:00");
-        //ui->groupComboBox2->addItem("05:00");
-        //ui->groupComboBox2->addItem("07:00");
         ui->dateComboBox->clear();
         for (int i = 0;i<40;i++)
         ui->dateComboBox->addItem(QString::number(i+1) + "- " + Smonday[i]);
         break;
     case 5:
-        //ui->groupComboBox2->clear();
-        //ui->groupComboBox2->addItem("");
-        //ui->groupComboBox2->addItem("09:00");
-        //ui->groupComboBox2->addItem("11:00");
-        //ui->groupComboBox2->addItem("01:00");
-        //ui->groupComboBox2->addItem("03:00");
-        //ui->groupComboBox2->addItem("05:00");
-        //ui->groupComboBox2->addItem("07:00");
         ui->dateComboBox->clear();
         for (int i = 0;i<40;i++)
         ui->dateComboBox->addItem(QString::number(i+1)+ "- " + Stuesday[i]);
         break;
     case 6:
-        //ui->groupComboBox2->clear();
-        //ui->groupComboBox2->addItem("");
-        //ui->groupComboBox2->addItem("09:00");
-        //ui->groupComboBox2->addItem("11:00");
-        //ui->groupComboBox2->addItem("01:00");
-        //ui->groupComboBox2->addItem("03:00");
-        //ui->groupComboBox2->addItem("05:00");
-        //ui->groupComboBox2->addItem("07:00");
         ui->dateComboBox->clear();
         for (int i = 0;i<40;i++)
         ui->dateComboBox->addItem(QString::number(i+1) + "- " + Swednesday[i]);
@@ -851,7 +812,7 @@ void MainWindow::on_viewGradesBtn_clicked()
 
    ui->tableView_2->resizeColumnsToContents();
    //ui->tableView_2->resizeRowsToContents();
-   ui->tableView_2->verticalHeader()->setVisible(false);
+   //ui->tableView_2->verticalHeader()->setVisible(false);
 
    for (int i=2;i<11;i++)
    ui->tableView_2->hideColumn(i);
@@ -942,6 +903,10 @@ void MainWindow::on_compensationBtn_clicked()
 
         if(!q.exec())
             qWarning() << "Add - ERROR: " << q.lastError().text();
+        else
+        {
+            on_viewAttendance_clicked();
+        }
     }
     else
     {
@@ -992,13 +957,30 @@ void MainWindow::on_showGroupReport_clicked()
         missed.exec();
         missed.first();
 
+        QSqlQuery comp;
+        comp.prepare("SELECT COUNT(id) FROM student WHERE day = ? AND time = ? AND day" + QString::number(ui->dateComboBox->currentIndex()+1) + " IS NOT NULL AND day" + QString::number(ui->dateComboBox->currentIndex()+1) + "!= ? AND day" + QString::number(ui->dateComboBox->currentIndex()+1) + "!= ?");
+        comp.addBindValue(ui->dayComboBox2->currentText());
+        comp.addBindValue(ui->groupComboBox2->currentText());
+        comp.addBindValue("حاضر");
+        comp.addBindValue("غائب");
+        comp.exec();
+        comp.first();
+
+
+
         groupinfo grpinfo;
         grpinfo.setModal(true);
-        grpinfo.setData(ui->groupComboBox2->currentText(),ui->dayComboBox2->currentText(),ui->dateComboBox->currentText(),attendance.value(0).toString(),missed.value(0).toString(),"");
+        grpinfo.setData(ui->groupComboBox2->currentText(),ui->dayComboBox2->currentText(),ui->dateComboBox->currentText(),attendance.value(0).toString(),missed.value(0).toString(),comp.value(0).toString());
         grpinfo.exec();
     }
     else
     {
         ui->result_label->setText("الرجاء ادخال جميع الخانات");
     }
+}
+
+void MainWindow::on_pushButton_8_clicked()
+{
+    QTableView *tableView = ui->tableView_2;
+    handleReport(tableView);
 }

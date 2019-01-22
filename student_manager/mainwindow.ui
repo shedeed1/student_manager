@@ -547,6 +547,32 @@
        <string>عرض تقرير</string>
       </property>
      </widget>
+     <widget class="QLabel" name="label_10">
+      <property name="geometry">
+       <rect>
+        <x>930</x>
+        <y>510</y>
+        <width>241</width>
+        <height>20</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>اضغط على الرقم التعريفي ثم اضغط على هذا الزر</string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="pushButton_8">
+      <property name="geometry">
+       <rect>
+        <x>990</x>
+        <y>540</y>
+        <width>141</width>
+        <height>41</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>عرض تقرير عن الطالب</string>
+      </property>
+     </widget>
     </widget>
    </widget>
   </widget>

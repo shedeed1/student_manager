@@ -6,6 +6,7 @@
 #include <QDate>
 #include <QFontDatabase>
 #include <QFont>
+#include <QQueue>
 
 StudentInfo::StudentInfo(QWidget *parent) :
     QDialog(parent),
@@ -17,24 +18,24 @@ StudentInfo::StudentInfo(QWidget *parent) :
 
 }
 
-void StudentInfo::setData(const QString &labelText, const QString &labelText2, QStack<int> &missedStack,QStack<int> &attendedStack,QStack<QString> &compensationStack, QDate dates[],QString family) {
+void StudentInfo::setData(const QString &labelText, const QString &labelText2, QQueue<int> &missedStack,QQueue<int> &attendedStack,QQueue<QString> &compensationStack, QDate dates[],QString family) {
   ui->label_3->setText(labelText);
   ui->label_4->setText(labelText2);
   QString arabicdate;
   QLocale locale = QLocale(QLocale::Arabic, QLocale::Egypt);
   while (!missedStack.isEmpty())
   {
-      arabicdate = locale.toString(dates[missedStack.pop() - 17]);
+      arabicdate = locale.toString(dates[missedStack.dequeue() - 17]);
       ui->listWidget->addItem(arabicdate);
   }
   while(!attendedStack.isEmpty())
   {
-      arabicdate = locale.toString(dates[attendedStack.pop() - 17]);
+      arabicdate = locale.toString(dates[attendedStack.dequeue() - 17]);
       ui->listWidget_2->addItem(arabicdate);
   }
   while(!compensationStack.isEmpty())
   {
-      ui->listWidget_2->addItem(compensationStack.pop());
+      ui->listWidget_2->addItem(compensationStack.dequeue());
   }
 
   QFont fontUnderlined(family);

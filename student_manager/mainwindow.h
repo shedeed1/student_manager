@@ -2,6 +2,7 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
+#include <QTableView>
 
 namespace Ui {
 class MainWindow;
@@ -33,6 +34,8 @@ private slots:
 
     void on_pushButton_7_clicked();
 
+    void handleReport(QTableView*);
+
 
     void on_pushButton_9_clicked();
 
@@ -51,6 +54,8 @@ private slots:
     void on_recordAttendanceToAll_clicked();
 
     void on_showGroupReport_clicked();
+
+    void on_pushButton_8_clicked();
 
 private:
     Ui::MainWindow *ui;
